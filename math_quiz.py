@@ -129,17 +129,6 @@ def math_quiz():
 
     data.append(leaderboard)
 
-    with open("data.json", "w") as file:
-        json.dump(data, file, indent=4)
-
-    file_name = "data.json"
-
-    with open(file_name, "r") as file:
-        data = json.load(file)  # Parse the JSON into a Python object
-    # Print the contents
-    print("Contents of the JSON file:")
-    print(json.dumps(data, indent=4))  # Pretty-print the JSON data
-        
 
 if __name__ == "__main__":
     math_quiz()
