@@ -83,6 +83,7 @@ def time_per_question(answer, time_limit):
         #print invalid input and skip to the next question
 
 def math_quiz():
+    os.system('cls')
     time_limit = [10, 8, 6]
     num_questions = 5
     question_correct=0
@@ -97,12 +98,17 @@ def math_quiz():
     time.sleep(1)
     print("Nice to meet you")
     time.sleep(1)
-    print("You will score diffrent mark for every level")
+    print("You will score different mark for every level")
+    time.sleep(1)
     print("You will score 1 mark for each question in Easy level which is level 1")
+    time.sleep(1)
     print("You will score 2 mark for each question in Hard level which is level 2")
+    time.sleep(1)
     print("You will score 3 mark for each question in Extreme level which is level 3")
-    time.sleep(2)
     print("(Enter 'quit' to exit the quiz at any time)")
+    time.sleep(2)
+    os.system('cls')
+
 
 
     level_index = 0  # Start from the first level
