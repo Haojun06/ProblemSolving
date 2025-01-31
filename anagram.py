@@ -2,6 +2,7 @@ import random
 import time
 import os
 import json
+import requests
 
 # Shuffle the word
 def shuffle_word(word):
@@ -9,14 +10,30 @@ def shuffle_word(word):
     random.shuffle(word_list)
     return ''.join(word_list)
 
-# Load words from local dictionary file
+# Load words by using api
 def load_words():
     try:
-        with open("words.txt", "r") as file:
-            return [word.strip().lower() for word in file.readlines()]
-    except FileNotFoundError:
-        print("Error: words.txt not found. Using default words.")
+        url = "https://random-word-api.p.rapidapi.com/get_word"  
+        headers = {
+            "x-rapidapi-host": "random-word-api.p.rapidapi.com",
+            "x-rapidapi-key": "a39affc583mshb5f4b5ede89a1bap1d3bb4jsncd1c1b704b7e"
+        }
+
+
+        response = requests.get(url,headers=headers)
+        if response.status_code == 200:
+            data = response.json()  # API returns a list of words
+            if isinstance(data, dict) and "word" in data:
+                return [data["word"]]  # Extract word from dictionary
+            elif isinstance(data, list):
+                return data  # If the API returns a list, use it directly
+        else:
+            print("Error fetching words from API. Using fallback words.")
+            return ["default", "example", "random", "python", "coding"]
+    except requests.RequestException:
+        print("Network error. Using fallback words.")
         return ["default", "example", "random", "python", "coding"]
+
 
 # Check if the word is valid
 def is_valid_word(guess):
@@ -86,7 +103,8 @@ def play_anagram_game(timed):
     print(f"Starting {'Timed' if timed else 'Relaxed'} Mode...\n")
     print("Rules: Unscramble the letters to form a valid word.")
     print("Type 'hint' for a hint, 'skip' to skip a word, or 'quit' to exit.\n")
-    print(f"Current High Score: {scores['high_score']}\n")
+    input(f"Current High Score: {scores['high_score']}\nPress Enter to continue...")
+
 
     score = 0
     hints_used = 0
