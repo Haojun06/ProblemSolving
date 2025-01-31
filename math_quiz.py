@@ -99,14 +99,13 @@ def math_quiz():
     print("Nice to meet you")
     time.sleep(1)
     print("You will score different mark for every level")
-    time.sleep(1)
     print("You will score 1 mark for each question in Easy level which is level 1")
-    time.sleep(1)
     print("You will score 2 mark for each question in Hard level which is level 2")
-    time.sleep(1)
     print("You will score 3 mark for each question in Extreme level which is level 3")
     print("(Enter 'quit' to exit the quiz at any time)")
-    time.sleep(2)
+    #user can continue the game whenever the user want
+    enter=input("Please press an enter after you read all the rules")
+    #clear the rules screen
     os.system('cls')
 
 
@@ -120,8 +119,6 @@ def math_quiz():
         i = 1  # Initialize the counter for questions
 
         while i <= num_questions:
-            #wait for 1 second for readability
-            time.sleep(1)
             #print the number of question
             print(f"Question {i}/{num_questions}:")
             #call the gen_qtn function and give the level to the function
@@ -149,6 +146,8 @@ def math_quiz():
                 score =score+ mark[level_index]
 
             i += 1  # Increment the question counter
+            time.sleep(1)#give user some time to read the instruction
+            os.system('cls')#clear the screen
 
         #if the user dont want to continue the game
         if cont_game == 'no':
