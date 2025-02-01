@@ -13,7 +13,7 @@ def shuffle_word(word):
 # Load words by using api
 def load_words():
     try:
-        url = "https://random-word-api.p.rapidapi.com/get_word"  
+        url = "https://random-word-api.p.rapidapi.com/L/5"  
         headers = {
             "x-rapidapi-host": "random-word-api.p.rapidapi.com",
             "x-rapidapi-key": "a39affc583mshb5f4b5ede89a1bap1d3bb4jsncd1c1b704b7e"
@@ -23,6 +23,7 @@ def load_words():
         response = requests.get(url,headers=headers)
         if response.status_code == 200:
             data = response.json()  # API returns a list of words
+            
             if isinstance(data, dict) and "word" in data:
                 return [data["word"]]  # Extract word from dictionary
             elif isinstance(data, list):
@@ -35,10 +36,7 @@ def load_words():
         return ["default", "example", "random", "python", "coding"]
 
 
-# Check if the word is valid
-def is_valid_word(guess):
-    words = load_words()
-    return guess in words
+
 
 # Clear the terminal screen
 def clear_screen():
@@ -95,6 +93,7 @@ def view_scores():
 # Play the anagram game
 def play_anagram_game(timed):
     words = load_words()
+    
     if not words:
         print("Error: No words available to play. Exiting.")
         return
@@ -105,7 +104,6 @@ def play_anagram_game(timed):
     print("Type 'hint' for a hint, 'skip' to skip a word, or 'quit' to exit.\n")
     input(f"Current High Score: {scores['high_score']}\nPress Enter to continue...")
 
-
     score = 0
     hints_used = 0
     rounds_played = 0
@@ -113,19 +111,21 @@ def play_anagram_game(timed):
     max_game_time = 30  # Set total game time limit
 
     while global_timer < max_game_time:
+        words = load_words()
         clear_screen()
-        word = random.choice(words)
-        scrambled = shuffle_word(word)
+        word = random.choice(words)  # Pick a random word for the round
+        scrambled = shuffle_word(word)  # Shuffle the word to make it an anagram
 
         print(f"Round {rounds_played + 1}: Scrambled word: {scrambled}\n")
 
         attempts = 3
         round_start_time = time.time()
-        round_end_time = round_start_time + max_game_time - global_timer  # Time left for full game
 
         while attempts > 0:
             elapsed_time = time.time() - round_start_time
-            global_timer += elapsed_time  # Update global game timer
+            global_timer += elapsed_time  
+            round_start_time = time.time()
+
 
             # Check if the overall game timer has expired
             if global_timer >= max_game_time:
@@ -159,7 +159,7 @@ def play_anagram_game(timed):
                 input("\nPress Enter to continue...")
                 break
 
-            if is_valid_word(guess) and guess == word:
+            if guess.lower() == word.lower():
                 end_time = time.time()
                 round_time = end_time - round_start_time
                 global_timer += round_time
@@ -169,6 +169,11 @@ def play_anagram_game(timed):
                 input("\nPress Enter to continue...")
                 break
             else:
+                end_time = time.time()
+                round_time = end_time - round_start_time
+                global_timer += round_time
+                score -= 1
+                rounds_played += 1
                 print("Incorrect word. Do you want to:")
                 print("1. Try again")
                 print("2. Move to the next word")
@@ -182,10 +187,18 @@ def play_anagram_game(timed):
                     print("Try again!")
                     attempts -= 1
 
-        if attempts == 0:
+        if attempts <= 0:
             print(f"Out of attempts! The word was: {word}.\n")
+            print(f"Rounds played: {rounds_played}\n")
+            print(f"Your score is {score}")
             input("\nPress Enter to continue...")
+            
             rounds_played += 1
 
+        if global_timer < max_game_time:
+            print(f"Out of time! \n")
+            print(f"Rounds played: {rounds_played}\n")
+            print(f"Your score is {score}")
+            input("Press Enter to continue...")
 if __name__ == "__main__":
     main_menu()
