@@ -1,7 +1,6 @@
 import os
 import json
 import sys
-import math_quiz
 import time 
 
 users = {}
