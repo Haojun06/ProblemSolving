@@ -247,6 +247,10 @@ def math_quiz():
         
         level_index += 1  # Move to the next level
 
+    print("Thanks for playing")
+    print(f"Your answer {question_correct} question out of {i} question correctly and score {score} marks")
+
+
     #save the score in the leaderboard
     leaderboard=f"Math quiz score:{score}"
 
