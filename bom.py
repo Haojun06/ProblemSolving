@@ -5,51 +5,54 @@ import json
 
 #starting part
 print("Welcome to MATH BOMB section ^-^")
-time.sleep(1)
+time.sleep(1) # delay for better user experience
 print("You will be given 6 lives for guessing the correct answer")
 time.sleep(1)
 print("Hint will be given after a wrong answer , but there will be one fake hint.")
 time.sleep(1)
 
 #setting a initial value 
-level = 0
-score = 0
-status = "next"
+level = 0 # Starting level of the game
+score = 0 # Player's score
+status = "next" # Game status (next means the game continues)
 
-#setting a correct answer and fake hint round
+# Function to set up a random correct answer and fake hint turn
 def setting ():
     global correct , fake_hint_turn #let the value declares to whole program
-    fake_hint_turn = random.randint(1, 6)
-    correct = random.randint(1,level)
+    fake_hint_turn = random.randint(1, 6) # randomly set a fake hint turn
+    correct = random.randint(1,level) #random correct number 
     print(f"The correct number is between 1 and {level}")
+    print(correct)
     
-#decrease the lives and give the fake hint or real hint
+#Function to decrease the lives and give the fake hint or real hint
 def hint(guess):
-    global lives 
-    lives -=  1
-    if lives == fake_hint_turn - 1:#if the random number(fake_hint_turn) is equal to the lives , fake hint come out
+    global lives #let the value declares to whole program
+    lives -=  1 #decreasing the number of lives after each guess
+    if lives == fake_hint_turn - 1:#if the random number(fake_hint_turn) is equal to the lives , fake hint is triggered
         if correct > guess:
             print (f"smaller than {guess}...lives remain :{lives}")
         else :
             print (f"greater than {guess}...lives remain :{lives}")
-    else:
+    else:# If it's a real hint
         if correct > guess:
             print (f"greater than {guess}...lives remain :{lives}")
         else: print (f"smaller  than {guess}...lives remain :{lives}")
-    return lives
+    return lives # Returning the remaining lives after each guess
     
-
+#Function to show result of guess
 def result(guess):
-    global score , status
-    if correct == guess:
+    global score , status#let the value declares to whole program
+    if correct == guess: # If the guess is correct
         print("CORRECT ANSWER !! GO TO NEXT LEVEL")
-        score += 100
-        status = "next"
+        score += 100 # adding score 
+        status = "next" 
+        clear_screen()# Clears the screen before each question
     else:
         print(f"GAME OVER . The correct number was {correct}.")
         status = "stop"
+        time.sleep(2) # Pause so user can see "GAME OVER"
 
-#showing level difficulty
+#Function to show level difficulty
 def levels(level):
     if level <= 10 :
         print("level : EASY ")
@@ -60,13 +63,13 @@ def levels(level):
     else:
         print("level : INSANE ")
 
-# Save the score
+# Function to save the score to file
 def save_score(score):
     if os.path.exists("bombscore.json"):
         try:
-            with open("bombscore.json", "r") as file:#open the file in read mode
+            with open("bombscore.json", "r") as file: #open the file in read mode
                 data = json.load(file)# Load existing scores
-        except json.JSONDecodeError:
+        except json.JSONDecodeError: # Handle the case where the JSON file is corrupted
             print("⚠️ Warning: Score file is corrupt. Resetting scores.")
             data = []  # Reset to an empty list if the file is corrupted
     else:
@@ -77,13 +80,13 @@ def save_score(score):
     with open("bombscore.json", "w") as file:
         json.dump(data, file)  # Save updated scores
         
-#show leaderboard before start
+#Function to show leaderboard before start
 def show_leaderboard():
-    if os.path.exists("bombscore.json"):
+    if os.path.exists("bombscore.json"):# If the score file exists
         with open("bombscore.json", "r") as file:
-            data = json.load(file)
+            data = json.load(file)  # Load existing scores
 
-        if data:
+        if data: # If there are scores
             print("\n🏆 Math Bomb Leaderboard 🏆")
             top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5]  # Show top 5
             for i, entry in enumerate(top_scores):
@@ -93,28 +96,44 @@ def show_leaderboard():
     else:
         print("No scores yet. Be the first to set a high score!")
 
-        
-# Call this before the game starts
+#Function to clear the screen
+def clear_screen():
+    time.sleep(1)
+    os.system('cls' if os.name == 'nt' else 'clear')  # Clears screen for Windows (cls) and macOS/Linux (clear)
+    
+# Function to ask the player if they want to continue
+def ask_continue():
+    while True:
+        choice = input("Do you want to continue playing? (yes/no): ").strip().lower()  # ensure no spacing and case-insensitivity
+        if choice == "no":
+            return "stop"  # Return "stop" to end the game
+        elif choice == "yes":
+            return "next"  # Return "next" to continue the game
+        else:
+            print("Invalid choice. Please enter 'yes' or 'no'.")
+
+    
+# Call this before the game starts to show the leaderboard
 show_leaderboard() 
 time.sleep(1)
 
 #Game loop
 while status == "next":
-    lives = 6
-    level += 10
-    setting()
-    levels(level)
+    lives = 6 # Reset lives to 6 for each new round
+    level += 10 # Increase level after each round
+    setting() # Set the correct answer and fake hint turn for the round
+    levels(level) # Display the current difficulty level
     while True :
         try:
             guess = int(input("Your Guess: "))
-            
-            break
+            break # Exit the loop once a valid guess is made
         except ValueError:
             print("Invalid input. Please enter a number.")
             
+    # Keep giving hints until the player guesses correctly or runs out of lives       
     while guess != correct and lives > 0 :
-        lives = hint(guess)
-        if lives > 0:
+        lives = hint(guess) # Call the hint function and decrease lives
+        if lives > 0: # If the player still has lives, ask for another guess
             try:
                 guess = int(input("Your Guess: "))
             except ValueError:
@@ -123,18 +142,11 @@ while status == "next":
     result(guess)
 
     
-    #Every 4 levels, ask the player if they want to continue
-    if level % 40 == 0 and status == "next":  
+    # Every 4 levels, ask the player if they want to continue
+    if level % 40 == 0 and status == "next":
         print("\n🎮 You've completed 4 levels! 🎮")
-        while True:
-            choice = input("Do you want to continue playing? (yes/no): ").lower()
-            if choice == "no":
-                status = "stop"
-                break
-            elif choice == "yes":
-                break
-            else:
-                print("Invalid choice. Please enter 'yes' or 'no'.")
+        status = ask_continue()  # Use the function to ask if the player wants to continue
+
     
 # Save score at the end of the game
 print(f"Your final score is: {score}")
@@ -142,3 +154,6 @@ save_score(score)
     
 # Show updated leaderboard after the game
 show_leaderboard()
+
+# Pause for 5 seconds so user can see the final score
+time.sleep(5) 
