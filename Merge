@@ -249,6 +249,7 @@ def math_quiz():
 
     print("Thanks for playing")
     print(f"Your answer {question_correct} question out of {i} question correctly and score {score} marks")
+    time.sleep(1)
 
 
     #save the score in the leaderboard
