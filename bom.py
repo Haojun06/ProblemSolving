@@ -115,6 +115,8 @@ def math_bomb():
     time.sleep(1)
     print("Hint will be given after a wrong answer , but there will be one fake hint.")
     time.sleep(1)
+    print("🔥 Hit a streak of 3 correct answers and earn a 2x bonus")
+    time.sleep(1)
 
     #setting a initial value 
     level = 0 # Starting level of the game
