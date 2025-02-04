@@ -3,21 +3,9 @@ import time
 import os
 import json
 
-#starting part
-print("Welcome to MATH BOMB section ^-^")
-time.sleep(1) # delay for better user experience
-print("You will be given 6 lives for guessing the correct answer")
-time.sleep(1)
-print("Hint will be given after a wrong answer , but there will be one fake hint.")
-time.sleep(1)
-
-#setting a initial value 
-level = 0 # Starting level of the game
-score = 0 # Player's score
-status = "next" # Game status (next means the game continues)
 
 # Function to set up a random correct answer and fake hint turn
-def setting ():
+def setting (level):
     global correct , fake_hint_turn #let the value declares to whole program
     fake_hint_turn = random.randint(1, 6) # randomly set a fake hint turn
     correct = random.randint(1,level) #random correct number 
@@ -40,17 +28,23 @@ def hint(guess):
     return lives # Returning the remaining lives after each guess
     
 #Function to show result of guess
-def result(guess):
-    global score , status#let the value declares to whole program
+def result(score,guess,streak):
     if correct == guess: # If the guess is correct
         print("CORRECT ANSWER !! GO TO NEXT LEVEL")
-        score += 100 # adding score 
+        score += 100 # adding score
+        streak += 1
+        if streak == 4 :
+            score *= 2
+            print("BONUS:scores is doubled")
+            print(f"current score = {score}")
+            streak = 0
         status = "next" 
         clear_screen()# Clears the screen before each question
     else:
         print(f"GAME OVER . The correct number was {correct}.")
         status = "stop"
         time.sleep(2) # Pause so user can see "GAME OVER"
+    return score , status ,streak
 
 #Function to show level difficulty
 def levels(level):
@@ -63,7 +57,6 @@ def levels(level):
     else:
         print("level : INSANE ")
 
-# Function to save the score to file
 def save_score(score):
     if os.path.exists("bombscore.json"):
         try:
@@ -112,48 +105,75 @@ def ask_continue():
         else:
             print("Invalid choice. Please enter 'yes' or 'no'.")
 
-    
-# Call this before the game starts to show the leaderboard
-show_leaderboard() 
-time.sleep(1)
+def math_bomb():
+    global lives
 
-#Game loop
-while status == "next":
-    lives = 6 # Reset lives to 6 for each new round
-    level += 10 # Increase level after each round
-    setting() # Set the correct answer and fake hint turn for the round
-    levels(level) # Display the current difficulty level
-    while True :
-        try:
-            guess = int(input("Your Guess: "))
-            break # Exit the loop once a valid guess is made
-        except ValueError:
-            print("Invalid input. Please enter a number.")
-            
-    # Keep giving hints until the player guesses correctly or runs out of lives       
-    while guess != correct and lives > 0 :
-        lives = hint(guess) # Call the hint function and decrease lives
-        if lives > 0: # If the player still has lives, ask for another guess
+    #starting part
+    print("Welcome to MATH BOMB section ^-^")
+    time.sleep(1) # delay for better user experience
+    print("You will be given 6 lives for guessing the correct answer")
+    time.sleep(1)
+    print("Hint will be given after a wrong answer , but there will be one fake hint.")
+    time.sleep(1)
+
+    #setting a initial value 
+    level = 0 # Starting level of the game
+    score = 0 # Player's score
+    status = "next" # Game status (next means the game continues)
+    lives = 6
+    streak = 0
+
+    # Call this before the game starts to show the leaderboard
+    show_leaderboard() 
+    time.sleep(1)
+
+    #Game loop
+    while status == "next":
+        lives = 6 # Reset lives to 6 for each new round
+        level += 10 # Increase level after each round
+        setting(level) # Set the correct answer and fake hint turn for the round
+        levels(level) # Display the current difficulty level
+        print(f"Your current score: {score}")
+        print(f"Your current streak: {streak}")
+
+        guess = None
+        while guess is None:
             try:
                 guess = int(input("Your Guess: "))
             except ValueError:
                 print("Invalid input. Please enter a number.")
                 
-    result(guess)
+        # Keep giving hints until the player guesses correctly or runs out of lives       
+        while guess != correct and lives > 0 :
+            lives = hint(guess) # Call the hint function and decrease lives
+            if lives > 0: # If the player still has lives, ask for another guess
+                guess = None 
+                while guess is None :
+                    try:
+                        guess = int(input("Your Guess: "))
+                    except ValueError:
+                        print("Invalid input. Please enter a number.")
+        
 
-    
-    # Every 4 levels, ask the player if they want to continue
-    if level % 40 == 0 and status == "next":
-        print("\n🎮 You've completed 4 levels! 🎮")
-        status = ask_continue()  # Use the function to ask if the player wants to continue
+                    
+        score ,status,streak = result(score,guess,streak)
 
-    
-# Save score at the end of the game
-print(f"Your final score is: {score}")
-save_score(score)
-    
-# Show updated leaderboard after the game
-show_leaderboard()
+        
+        # Every 4 levels, ask the player if they want to continue
+        if level % 40 == 0 and status == "next":
+            print("\n🎮 You've completed 4 levels! 🎮")
+            status = ask_continue()  # Use the function to ask if the player wants to continue
 
-# Pause for 5 seconds so user can see the final score
-time.sleep(5) 
+        
+    # Save score at the end of the game
+    print(f"Your final score is: {score}")
+    save_score(score)
+        
+    # Show updated leaderboard after the game
+    show_leaderboard()
+
+    # Pause for 5 seconds so user can see the final score
+    time.sleep(5) 
+
+if __name__ == "__main__":
+    math_bomb()
