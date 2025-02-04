@@ -32,12 +32,12 @@ def result(score,guess,streak):
     if correct == guess: # If the guess is correct
         print("CORRECT ANSWER !! GO TO NEXT LEVEL")
         score += 100 # adding score
-        streak += 1
-        if streak == 4 :
-            score *= 2
-            print("BONUS:scores is doubled")
+        streak += 1 # adding streak
+        if streak == 4 : 
+            score *= 2 # if streak is enough ,double the score
+            print("BONUS:scores is doubled") 
             print(f"current score = {score}")
-            streak = 0
+            streak = 0 # reset the streak 
         status = "next" 
         clear_screen()# Clears the screen before each question
     else:
@@ -120,8 +120,8 @@ def math_bomb():
     level = 0 # Starting level of the game
     score = 0 # Player's score
     status = "next" # Game status (next means the game continues)
-    lives = 6
-    streak = 0
+    lives = 6 #PLayer's lives
+    streak = 0 #streak in correct answer
 
     # Call this before the game starts to show the leaderboard
     show_leaderboard() 
