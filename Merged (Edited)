@@ -728,7 +728,7 @@ def math_bomb():
     #show_bombleaderboard()
 
     # Pause for 5 seconds so user can see the final score
-    time.sleep(5) 
+    #time.sleep(5) 
 
 #Run program
 if __name__ == "__main__":
