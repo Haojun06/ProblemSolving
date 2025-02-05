@@ -149,8 +149,9 @@ def leaderboard(username):
     score_choice = input("Enter your choice (1-4): ").strip()
     
     if score_choice == "1": #View leaderboard for Math Quiz
-        input("Nothing here yet!")
         clear_screen()
+        mathleaderboard(username)
+        input("Press ENTER to return...")
             
     elif score_choice == "2": #View leaderboard for Anagram
         clear_screen()
@@ -292,7 +293,7 @@ def mathleaderboard(username):
     else:
         print("No scores yet. Be the first to set a high score!")
 
-def math_quiz():
+def math_quiz(username):
     os.system('cls')
     time_limit = [10, 8, 6]
     num_questions = 5
@@ -745,11 +746,11 @@ def ask_continue():
         else:
             print("Invalid choice. Please enter 'yes' or 'no'.")
 
-def number_bomb():
+def math_bomb():
     global lives
 
     #starting part
-    print("Welcome to NUMBER BOMB section ^-^")
+    print("Welcome to MATH BOMB section ^-^")
     time.sleep(1) # delay for better user experience
     print("You will be given 6 lives for guessing the correct answer")
     time.sleep(1)
