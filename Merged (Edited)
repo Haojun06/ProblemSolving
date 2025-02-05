@@ -725,7 +725,7 @@ def show_bombleaderboard(username):
             data = json.load(file)  # Load existing scores
 
         if data: # If there are scores
-            print("\n🏆 Math Bomb Leaderboard 🏆")
+            print("\n🏆 Number Bomb Leaderboard 🏆")
             top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5]  # Show top 5
             for i, entry in enumerate(top_scores):
                 print(f"{i + 1}. {entry['username']}: {entry['score']}")
@@ -795,19 +795,15 @@ def math_bomb(username):
         # Keep giving hints until the player guesses correctly or runs out of lives       
         while guess != correct and lives > 0 :
             lives = hint(guess) # Call the hint function and decrease lives
-            if lives > 0: # If the player still has lives, ask for another guess
-                guess = None 
-                while guess is None :
-                    try:
-                        guess = int(input("Your Guess: "))
-                    except ValueError:
-                        print("Invalid input. Please enter a number.")
-        
-
-                    
+            guess = None 
+            while guess is None :
+                try:
+                    guess = int(input("Your Guess: "))
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
+     
         score ,status,streak = result(score,guess,streak)
 
-        
         # Every 4 levels, ask the player if they want to continue
         if level % 40 == 0 and status == "next":
             print("\n🎮 You've completed 4 levels! 🎮")
