@@ -13,6 +13,10 @@ DATA_FILE = "users_data.json"
 #File to store game scores
 LEADERBOARD_FILE = "leaderboard.json"
 
+def get_username():
+    global username
+    username = input("Create a username: ").strip()
+
 #Load user data
 def load_data():
     try:
@@ -87,7 +91,7 @@ def register(users):
     clear_screen()
     print("REGISTER")
 
-    username = input("Create a username: ").strip()
+    get_username()
     
     if username in users:
         print("This user already exists. Try logging in OR create a new account.")
@@ -108,7 +112,7 @@ def login(users):
     clear_screen()
     print("LOG IN")
 
-    username = input("Enter your username: ").strip()
+    get_username()
     
     if username not in users:
         print("This username does not exist! Please register.")
@@ -149,23 +153,18 @@ def leaderboard(username):
     score_choice = input("Enter your choice (1-4): ").strip()
     
     if score_choice == "1": #View leaderboard for Math Quiz
+        input("Nothing here yet!")
         clear_screen()
-        mathleaderboard(username)
-        input("Press ENTER to return...")
-        return
             
     elif score_choice == "2": #View leaderboard for Anagram
         clear_screen()
         show_anagram_leaderboard()
         input("Press ENTER to return...")
-        return
-    
     elif score_choice in "3": #View leaderboard for Number bomb 
         clear_screen()
-        show_bombleaderboard()
+        show_bombleaderboard(username)
         input("Press ENTER to return...")
-        return
-    
+        
     elif score_choice == "4": #Go back to main menu 
         return        
     
@@ -189,11 +188,11 @@ def game():
             return
         elif game_choice in "3":
             clear_screen()
-            math_bomb()
+            math_bomb(username)
             input("Game ended! \n Press ENTER to return...")
         elif game_choice == "1":
             clear_screen()
-            math_quiz()
+            math_quiz(username)
             input("Game ended! \n Press ENTER to return...")
         elif game_choice == "2":
             clear_screen()
@@ -297,7 +296,8 @@ def mathleaderboard(username):
     else:
         print("No scores yet. Be the first to set a high score!")
 
-def math_quiz():
+
+def math_quiz(username):
     os.system('cls')
     time_limit = [10, 8, 6]
     num_questions = 5
@@ -719,7 +719,7 @@ def save_score(score):
         json.dump(data, file)  # Save updated scores
         
 #Function to show leaderboard before start
-def show_bombleaderboard():
+def show_bombleaderboard(username):
     if os.path.exists("bombscore.json"):# If the score file exists
         with open("bombscore.json", "r") as file:
             data = json.load(file)  # Load existing scores
@@ -728,11 +728,13 @@ def show_bombleaderboard():
             print("\n🏆 Math Bomb Leaderboard 🏆")
             top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5]  # Show top 5
             for i, entry in enumerate(top_scores):
-                print(f"{i+1}. Score: {entry['score']}")
+                print(f"{i + 1}. {entry['username']}: {entry['score']}")
         else:
             print("No scores yet. Be the first to set a high score!")
     else:
         print("No scores yet. Be the first to set a high score!")
+        
+    return username
 
 #Function to clear the screen
 def clear_screen():
@@ -750,7 +752,7 @@ def ask_continue():
         else:
             print("Invalid choice. Please enter 'yes' or 'no'.")
 
-def math_bomb():
+def math_bomb(username):
     global lives
 
     #starting part
@@ -771,7 +773,7 @@ def math_bomb():
     streak = 0 #streak in correct answer
 
     # Call this before the game starts to show the leaderboard
-    show_bombleaderboard() 
+    show_bombleaderboard(username) 
     time.sleep(1)
 
     #Game loop
@@ -817,10 +819,11 @@ def math_bomb():
     save_score(score)
         
     # Show updated leaderboard after the game
-    show_bombleaderboard()
+    show_bombleaderboard(username)
 
     # Pause for 5 seconds so user can see the final score
     time.sleep(5) 
+    return username
 
 #Run program
 if __name__ == "__main__":
