@@ -10,7 +10,6 @@ def setting (level):
     fake_hint_turn = random.randint(1, 6) # randomly set a fake hint turn
     correct = random.randint(1,level) #random correct number 
     print(f"The correct number is between 1 and {level}")
-    print(correct)
     
 #Function to decrease the lives and give the fake hint or real hint
 def hint(guess):
