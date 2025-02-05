@@ -104,11 +104,11 @@ def ask_continue():
         else:
             print("Invalid choice. Please enter 'yes' or 'no'.")
 
-def math_bomb():
+def number_bomb():
     global lives
 
     #starting part
-    print("Welcome to MATH BOMB section ^-^")
+    print("Welcome to NUMBER BOMB section ^-^")
     time.sleep(1) # delay for better user experience
     print("You will be given 6 lives for guessing the correct answer")
     time.sleep(1)
