@@ -152,16 +152,20 @@ def leaderboard(username):
         clear_screen()
         mathleaderboard(username)
         input("Press ENTER to return...")
+        return
             
     elif score_choice == "2": #View leaderboard for Anagram
         clear_screen()
         show_anagram_leaderboard()
         input("Press ENTER to return...")
+        return
+    
     elif score_choice in "3": #View leaderboard for Number bomb 
         clear_screen()
         show_bombleaderboard()
         input("Press ENTER to return...")
-        
+        return
+    
     elif score_choice == "4": #Go back to main menu 
         return        
     
@@ -293,7 +297,7 @@ def mathleaderboard(username):
     else:
         print("No scores yet. Be the first to set a high score!")
 
-def math_quiz(username):
+def math_quiz():
     os.system('cls')
     time_limit = [10, 8, 6]
     num_questions = 5
