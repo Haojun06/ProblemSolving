@@ -506,7 +506,6 @@ def anagram_main_menu():
             print("Invalid choice. Please try again.")
             time.sleep(2)
 
-
 # View high scores
 def view_anagram_scores():
     scores = load_anagram_scores()
@@ -518,7 +517,6 @@ def view_anagram_scores():
             print(f"Username: {entry['username']}, Score: {entry['score']}, Hints Used: {entry['hints_used']}, Rounds Played: {entry['rounds_played']}")
     else:
         print("No scores available.")
-    input("Press Enter to return to the main menu.")
 
 
 def play_timed_mode():
