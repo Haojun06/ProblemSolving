@@ -276,6 +276,21 @@ def time_per_question(answer, time_limit):
     except ValueError:
         print("Invalid Input")
         #print invalid input and skip to the next question
+def mathleaderboard(username):
+    #Function to show leaderboard before start
+    if os.path.exists("mathscore.json"):# If the score file exists
+        with open("mathscore.json", "r") as file:
+            data = json.load(file)  # Load existing scores
+
+        if data: # If there are scores
+            print("\n🏆 Math Quiz Leaderboard 🏆")
+            top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5]  # Show top 5
+            for i, entry in enumerate(top_scores):
+                print(f"{i+1}. {username}: {entry['score']}")
+        else:
+            print("No scores yet. Be the first to set a high score!")
+    else:
+        print("No scores yet. Be the first to set a high score!")
 
 def math_quiz():
     os.system('cls')
@@ -385,21 +400,8 @@ def math_quiz():
 
     with open("mathscore.json", "w") as file:
         json.dump(data, file)  # Save updated scores
-        
-#Function to show leaderboard before start
-    if os.path.exists("mathscore.json"):# If the score file exists
-        with open("mathscore.json", "r") as file:
-            data = json.load(file)  # Load existing scores
 
-        if data: # If there are scores
-            print("\n🏆 Math Quiz Leaderboard 🏆")
-            top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5]  # Show top 5
-            for i, entry in enumerate(top_scores):
-                print(f"{i+1}. {'username'}: {entry['score']}")
-        else:
-            print("No scores yet. Be the first to set a high score!")
-    else:
-        print("No scores yet. Be the first to set a high score!")
+    mathleaderboard(username)
 
 #ANAGRAM
 # Load words by using API
