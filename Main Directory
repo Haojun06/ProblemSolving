@@ -2,123 +2,33 @@ import os
 import json
 import sys
 import time
+import threading
+import random
+import pip._vendor.requests
 
 #File to store user data
+users={}
 DATA_FILE = "users_data.json"
 
-#Load user data from file
+#File to store game scores
+LEADERBOARD_FILE = "leaderboard.json"
+
+#Load user data
 def load_data():
     try:
         with open(DATA_FILE, 'r') as file:
             return json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
-
-#Save user data to file
+     
+#Save user data 
 def save_data(data):
     with open(DATA_FILE, 'w') as file:
         json.dump(data, file, indent=4)
-
-#Clear the terminal screen
+        
+#Clear terminal screen
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
-
-#New user registeration
-def register(users):
-    clear_screen()
-    print("REGISTER")
-
-    username = input("Create a username: ").strip()
-    
-    if username in users:
-        print("This user already exists. Try logging in OR create a new account.")
-        input("Press ENTER to return to the main page...")
-        return users
-
-    password = input("Create a password: ").strip()
-    
-    users[username] = password
-    save_data(users)
-
-    print("Account created! Please log in.")
-    input("Press ENTER to continue...")
-    return users
-
-#Log in
-def login(users):
-    clear_screen()
-    print("LOG IN")
-
-    username = input("Enter your username: ").strip()
-    
-    if username not in users:
-        print("This username does not exist! Please register.")
-        input("Press ENTER to go back...")
-        return None
-
-    password = input("Enter your password: ").strip()
-    
-    if users[username] == password:
-        clear_screen()
-        print(f"Welcome, {username}!")
-        time.sleep(1)
-        return username
-    else:
-        print("Incorrect password!")
-        input("Press ENTER to try again...")
-        return None
-
-def logout():
-    print("Logging out...")
-    time.sleep(2)
-    return None
-
-#Leaderboard
-def leaderboard():
-    print("Leaderboard")
-    input("Press ENTER to go back...")
-
-#Game options
-def game():
-    while True:
-        clear_screen()
-        print("Pick a game!")
-        print("1. Math Quiz")
-        print("2. Random Word")
-        print("3. Number Bomb")
-        print("4. RETURN")
-
-        game_choice = input("Enter your choice (1-4): ").strip()
-
-        if game_choice == "4":
-            return
-        elif game_choice in ["1", "2", "3"]:
-            print("Game under development!")
-            input("Press ENTER to return...")
-        else:
-            print("Invalid choice! Try again.")
-            input("Press ENTER to continue...")
-
-#Main menu/Directory 
-def main_menu(username):
-    while True:
-        clear_screen()
-        print(f"Welcome {username}!")
-        print("1. Play Games")
-        print("2. View Leaderboard")
-        print("3. Log Out")
-
-        choice = input("Enter your choice (1-3): ").strip()
-
-        if choice == "1":
-            game()
-        elif choice == "2":
-            leaderboard()
-        elif choice == "3":
-            return logout()
-        else:
-            print("Invalid choice! Try again.")
-            input("Press ENTER to continue...")
 
 #Main
 def main():
@@ -148,7 +58,152 @@ def main():
         else:
             print("Invalid choice! Please try again.")
             input("Press ENTER to continue...")
+#Main Menu/Directory
+def main_menu(username):
+    while True:
+        clear_screen()
+        print(f"Welcome {username}!")
+        print("1. Play Games")
+        print("2. View Leaderboard")
+        print("3. Log Out")
 
-#Run the program
+        choice = input("Enter your choice (1-3): ").strip()
+
+        if choice == "1":
+            game()
+        elif choice == "2":
+            leaderboard(username)
+        elif choice == "3":
+            logout(users, username)
+            main()
+            return users, username 
+        else:
+            print("Invalid choice! Try again.")
+            input("Press ENTER to continue...")
+            
+#Register new user
+def register(users):
+    clear_screen()
+    print("REGISTER")
+
+    username = input("Create a username: ").strip()
+    
+    if username in users:
+        print("This user already exists. Try logging in OR create a new account.")
+        input("Press ENTER to return to the main page...")
+        return users, username
+
+    password = input("Create a password:")
+    
+    users[username] = password
+    save_data(users)
+
+    print("Account created! Please log in.")
+    input("Press ENTER to continue...")
+    return users
+
+#Login
+def login(users):
+    clear_screen()
+    print("LOG IN")
+
+    username = input("Enter your username: ").strip()
+    
+    if username not in users:
+        print("This username does not exist! Please register.")
+        input("Press ENTER to go back...")
+        main()
+        return None
+
+    password = input("Enter your password: ")
+    
+    if users[username] == password:
+        clear_screen()
+        print(f"Welcome, {username}!")
+        time.sleep(1)
+        return username
+    else:
+        print("Incorrect password!")
+        input("Press ENTER to return...")
+        main()
+        return None
+
+#Logout
+def logout(users, username):
+    clear_screen()
+    print(f"Logging out {username}...")
+    time.sleep(2)
+    users, username= None  # Clear the username on logout
+    print("Successfully logged out!")
+    input("Press ENTER to go to main page...")
+    time.sleep(1)
+    return users
+
+#Leaderboard
+def leaderboard(username):
+    clear_screen()
+    print("VIEW LEADERBOARD")
+    print("1. Math quiz")
+    print("2. Anagram")
+    print("3. Number bomb")
+    print("4. BACK")
+    
+    score_choice = input("Enter your choice (1-4): ").strip()
+    
+    if score_choice == "1": #View leaderboard for Math Quiz
+        input("Nothing here yet!")
+        clear_screen()
+            
+    elif score_choice == "2": #View leaderboard for Anagram
+        view_anagram_scores()
+        clear_screen()
+        
+    elif score_choice in "3": #View leaderboard for Number bomb 
+        clear_screen()
+        show_bombleaderboard(username)
+        input("Press ENTER to return...")
+        
+    elif score_choice == "4": #Go back to main menu 
+        return        
+    
+    else: 
+        print("Invalid choice! Try again.")
+        input("Press ENTER to continue...")
+
+#Choose game
+def game():
+    while True:
+        clear_screen()
+        print("Pick a game!")
+        print("1. Math Quiz")
+        print("2. Anagram")
+        print("3. Number Bomb")
+        print("4. BACK")
+
+        game_choice = input("Enter your choice (1-4): ").strip()
+
+        if game_choice == "4":
+            return
+        elif game_choice in "3":
+            clear_screen()
+            math_bomb()
+            input("Game ended! \n Press ENTER to return...")
+        elif game_choice == "1":
+            clear_screen()
+            math_quiz()
+            input("Game ended! \n Press ENTER to return...")
+        elif game_choice == "2":
+            clear_screen()
+            anagram_main_menu()
+            input("Game ended! \n Press ENTER to return...")
+        else:
+            print("Invalid choice! Try again.")
+            input("Press ENTER to continue...")
+
+#MATH QUIZ
+#ANAGRAM
+#NUMBER BOMB
+
+#Run program
 if __name__ == "__main__":
-    main()
+    main()   
