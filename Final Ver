@@ -1,3 +1,12 @@
+# *************************************************************************
+# Program: TL16GAME.py
+# Course: CSP1114 PROBLEM SOLVING AND PROGRAM DESIGN
+# Lecture / Lab Section: TC1L / TL1L
+# Trimester: 2430
+# Names: LEE DARYNN | SEK HAO JUN | LEE CHUNG SUN | LEE MIN TING
+# IDs: 242FC241NJ | 242FC242C3 | 242FC241N0 | 242FC24299
+# Emails: LEE.DARYNN@student.mmu.edu.my | SEK.HAO.JUN@student.mmu.edu.my | LEE.CHUNG.SUN@student.mmu.edu.my | LEE.MIN.TING@student.mmu.edu.my
+# *************************************************************************
 import os
 import json
 import sys
@@ -50,7 +59,7 @@ def main():
         elif choice == "2":
             while logged_in is None:
                 logged_in = login(users)
-            if logged_in:
+            while logged_in is not None:
                 main_menu(logged_in)
         elif choice == "3":
             print("Quitting game...")
@@ -82,7 +91,7 @@ def main_menu(username):
         else:
             print("Invalid choice! Try again.")
             input("Press ENTER to continue...")
-        return username    
+                
 #Register new user
 def register(users):
     clear_screen()
@@ -205,8 +214,8 @@ def game():
             print("Invalid choice! Try again.")
             input("Press ENTER to continue...")
 
+# *************************************************************************
 #MATH QUIZ
-#**MATH QUIZ**
 user_answer = None
 
 def get_input():
@@ -409,7 +418,8 @@ def math_quiz(username):
         json.dump(data, file, indent=4)  # Save updated scores
 
     mathleaderboard()
-
+    
+# *************************************************************************
 #ANAGRAM
 # Load words by using API
 def load_words():
@@ -649,7 +659,8 @@ def play_relaxed_mode():
     username = input("Enter your username: ").strip()
     scores.append({"username": username, "score": score, "hints_used": hints_used, "rounds_played": rounds_played})
     save_scores(scores)
-    
+
+# *************************************************************************    
 #NUMBER BOMB
 # Function to set up a random correct answer and fake hint turn
 def setting (level):
@@ -736,11 +747,6 @@ def show_bombleaderboard():
         print("No scores yet. Be the first to set a high score!")
         
     return username
-
-#Function to clear the screen
-def clear_screen():
-    time.sleep(1)
-    os.system('cls' if os.name == 'nt' else 'clear')  # Clears screen for Windows (cls) and macOS/Linux (clear)
     
 # Function to ask the player if they want to continue
 def ask_continue():
