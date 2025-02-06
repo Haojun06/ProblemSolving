@@ -117,7 +117,6 @@ def login(users):
     if username not in users:
         print("This username does not exist! Please register.")
         input("Press ENTER to go back...")
-        main()
         return None
 
     password = input("Enter your password: ")
@@ -141,6 +140,7 @@ def logout(username):
     username= None  # Clear the username on logout
     print("Successfully logged out!")
     input("Press ENTER to go to main page...")
+    return username  
 
 #Leaderboard
 def leaderboard(username):
@@ -326,7 +326,7 @@ def math_quiz(username):
     print("You will score 3 mark for each question in Extreme level which is level 3")
     print("(Enter 'quit' to exit the quiz at any time)")
     #user can continue the game whenever the user want
-    enter=input("Please press an enter after you read all the rules")
+    input("Please press an enter after you read all the rules")
     #clear the rules screen
     os.system('cls')
 
