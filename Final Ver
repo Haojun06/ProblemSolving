@@ -15,7 +15,7 @@ LEADERBOARD_FILE = "leaderboard.json"
 
 def get_username():
     global username
-    username = input("Create a username: ").strip()
+    username = input("Enter your username: ").strip()
 
 #Load user data
 def load_data():
@@ -91,7 +91,7 @@ def register(users):
     clear_screen()
     print("REGISTER")
 
-    get_username()
+    username = input("Create a username: ").strip()
     
     if username in users:
         print("This user already exists. Try logging in OR create a new account.")
@@ -154,24 +154,24 @@ def leaderboard(username):
     
     if score_choice == "1": #View leaderboard for Math Quiz
         clear_screen()
-        mathleaderboard(username)
+        mathleaderboard()
         input("Press ENTER to return...")
-        leaderboard()
+        leaderboard(username)
             
     elif score_choice == "2": #View leaderboard for Anagram
         clear_screen()
         show_anagram_leaderboard()
         input("Press ENTER to return...")
-        leaderboard()
+        leaderboard(username)
         
     elif score_choice in "3": #View leaderboard for Number bomb 
         clear_screen()
-        show_bombleaderboard(username)
+        show_bombleaderboard()
         input("Press ENTER to return...")
-        leaderboard()
+        leaderboard(username)
         
     elif score_choice == "4": #Go back to main menu 
-        return        
+        main_menu(username)        
     
     else: 
         print("Invalid choice! Try again.")
@@ -285,7 +285,8 @@ def time_per_question(answer, time_limit):
     except ValueError:
         print("Invalid Input")
         #print invalid input and skip to the next question
-def mathleaderboard(username):
+        
+def mathleaderboard():
     #Function to show leaderboard before start
     if os.path.exists("mathscore.json"):# If the score file exists
         with open("mathscore.json", "r") as file:
@@ -295,7 +296,7 @@ def mathleaderboard(username):
             print("\n🏆 Math Quiz Leaderboard 🏆")
             top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5]  # Show top 5
             for i, entry in enumerate(top_scores):
-                print(f"{i+1}. {username}: {entry['score']}")
+                print(f"{i + 1}. {entry['username']}: {entry['score']}")
         else:
             print("No scores yet. Be the first to set a high score!")
     else:
@@ -327,8 +328,6 @@ def math_quiz(username):
     enter=input("Please press an enter after you read all the rules")
     #clear the rules screen
     os.system('cls')
-
-
 
     level_index = 0  # Start from the first level
     #while loop will continue until the level index is more than the len of levels which is 3
@@ -396,9 +395,9 @@ def math_quiz(username):
     print("Thanks for playing")
     print(f"You answered {question_correct} question correct out of {i} question and score {score} ")
 
-    if os.path.exists("mathcore.json"):
+    if os.path.exists("mathscore.json"):
         try:
-            with open("mathcore.json", "r") as file: #open the file in read mode
+            with open("mathscore.json", "r") as file: #open the file in read mode
                 data = json.load(file)# Load existing scores
         except json.JSONDecodeError: # Handle the case where the JSON file is corrupted
             print("⚠️ Warning: Score file is corrupt. Resetting scores.")
@@ -406,12 +405,12 @@ def math_quiz(username):
     else:
         data = []  # If no file, start fresh
 
-    data.append({"score": score})  # Store score as a dictionary
+    data.append({"username": username, "score": score})  # Store score as a dictionary
 
     with open("mathscore.json", "w") as file:
-        json.dump(data, file)  # Save updated scores
+        json.dump(data, file, indent=4)  # Save updated scores
 
-    mathleaderboard(username)
+    mathleaderboard()
 
 #ANAGRAM
 # Load words by using API
@@ -465,7 +464,7 @@ def load_anagram_scores():
 def save_scores(data):
     with open("scores.json", "w") as file: #open the scores.json file in write mode
         json.dump(data, file, indent=4) #write the data to the file with indentation
-
+        
 
 # Show leaderboard
 def show_anagram_leaderboard(): 
@@ -475,7 +474,7 @@ def show_anagram_leaderboard():
         if data: #if there is data in the file
             print("\n🏆 Anagram Leaderboard 🏆")    
             # Sort the data by score in descending order and get the top 5 scores
-            top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5]  
+            top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5] 
             for i, entry in enumerate(top_scores):  #iterate over the top scores
                 print(f"{i + 1}. {entry['username']}: {entry['score']}")
         else:
@@ -717,13 +716,13 @@ def save_score(score):
     else:
         data = []  # If no file, start fresh
 
-    data.append({"score": score})  # Store score as a dictionary
+    data.append({"username": username, "score": score})  # Store score as a dictionary
 
     with open("bombscore.json", "w") as file:
-        json.dump(data, file)  # Save updated scores
-        
+        json.dump(data, file, indent=4)  # Save updated scores
+  
 #Function to show leaderboard before start
-def show_bombleaderboard(username):
+def show_bombleaderboard():
     if os.path.exists("bombscore.json"):# If the score file exists
         with open("bombscore.json", "r") as file:
             data = json.load(file)  # Load existing scores
@@ -777,7 +776,7 @@ def math_bomb(username):
     streak = 0 #streak in correct answer
 
     # Call this before the game starts to show the leaderboard
-    show_bombleaderboard(username) 
+    show_bombleaderboard() 
     time.sleep(1)
 
     #Game loop
@@ -819,7 +818,7 @@ def math_bomb(username):
     save_score(score)
         
     # Show updated leaderboard after the game
-    show_bombleaderboard(username)
+    show_bombleaderboard()
 
     # Pause for 5 seconds so user can see the final score
     time.sleep(5) 
