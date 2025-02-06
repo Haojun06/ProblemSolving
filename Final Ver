@@ -10,9 +10,6 @@ import pip._vendor.requests
 users={}
 DATA_FILE = "users_data.json"
 
-#File to store game scores
-LEADERBOARD_FILE = "leaderboard.json"
-
 def get_username():
     global username
     username = input("Enter your username: ").strip()
