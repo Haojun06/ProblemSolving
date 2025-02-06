@@ -153,8 +153,8 @@ def leaderboard(username):
     score_choice = input("Enter your choice (1-4): ").strip()
     
     if score_choice == "1": #View leaderboard for Math Quiz
-        mathleaderboard(username)
         clear_screen()
+        mathleaderboard(username)
         input("Press ENTER to return...")
         leaderboard()
             
