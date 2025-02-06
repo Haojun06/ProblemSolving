@@ -153,17 +153,22 @@ def leaderboard(username):
     score_choice = input("Enter your choice (1-4): ").strip()
     
     if score_choice == "1": #View leaderboard for Math Quiz
-        input("Nothing here yet!")
+        mathleaderboard(username)
         clear_screen()
+        input("Press ENTER to return...")
+        leaderboard()
             
     elif score_choice == "2": #View leaderboard for Anagram
         clear_screen()
         show_anagram_leaderboard()
         input("Press ENTER to return...")
+        leaderboard()
+        
     elif score_choice in "3": #View leaderboard for Number bomb 
         clear_screen()
         show_bombleaderboard(username)
         input("Press ENTER to return...")
+        leaderboard()
         
     elif score_choice == "4": #Go back to main menu 
         return        
@@ -646,7 +651,6 @@ def play_relaxed_mode():
 
     username = input("Enter your username: ").strip()
     scores.append({"username": username, "score": score, "hints_used": hints_used, "rounds_played": rounds_played})
-    save_scores(scores)
     save_scores(scores)
     
 #NUMBER BOMB
