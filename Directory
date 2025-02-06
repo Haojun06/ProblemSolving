@@ -2,9 +2,6 @@ import os
 import json
 import sys
 import time
-import threading
-import random
-import pip._vendor.requests
 
 #File to store user data
 users={}
