@@ -185,7 +185,7 @@ def leaderboard(username):
         input("Press ENTER to return...")
         leaderboard(username)
         
-    elif score_choice in "3": #View leaderboard for Number bomb 
+    elif score_choice == "3": #View leaderboard for Number bomb 
         clear_screen()
         show_bombleaderboard()
         input("Press ENTER to return...")
@@ -225,7 +225,7 @@ def game():
             return
         elif game_choice in "3":
             clear_screen()
-            number_bomb(username)
+            math_bomb(username)
             input("Game ended! \n Press ENTER to return...")
         elif game_choice == "1":
             clear_screen()
@@ -786,7 +786,7 @@ def ask_continue():
         else:
             print("Invalid choice. Please enter 'yes' or 'no'.")
 
-def number_bomb(username):
+def math_bomb(username):
     global lives
 
     #starting part
