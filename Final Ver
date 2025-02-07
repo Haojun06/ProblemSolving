@@ -406,7 +406,7 @@ def math_quiz(username):
             break
         
         #print the question user have successfully answered and the score the user scored
-        print(f"You successfully answered {question_correct} questions correctly and your score is {score}")
+        print(f"You answered {question_correct} question correct out of {i} question and score {score} ")
         
         #if the game havent finish
         if level_index<2:
