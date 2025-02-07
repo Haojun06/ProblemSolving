@@ -446,6 +446,7 @@ def math_quiz(username):
 # *************************************************************************
 #ANAGRAM
 # Load words by using API
+# Load words by using API
 def load_words():
     try:
         url = "https://random-word-api.p.rapidapi.com/L/5"      #API endpoint to get words with 5 letters
@@ -482,32 +483,34 @@ def shuffle_word(word):
 # Load scores from JSON file
 def load_anagram_scores():
     try:
-        with open("anagram_scores.json", "r") as file:  #open the scores.json file in read mode
-            data = json.load(file)  #load the data from the file
-            if isinstance(data, list):      #check if the data is a list
-                return data #return the data
-            else:   #if the data is not a list
-                return []   #return an empty list
-    except (FileNotFoundError, json.JSONDecodeError): #if the file is not found or there is a JSON decode error
-        return []  #return an empty list
+        with open("anagram_scores.json", "r") as file:  # Open the anagram_scores.json file in read mode
+            data = json.load(file)  # Load the data from the file
+            if isinstance(data, list):  # Check if the data is a list
+                return data  # Return the data
+            else:  # If the data is not a list
+                return []  # Return an empty list
+    except (FileNotFoundError, json.JSONDecodeError):  # If the file is not found or there is a JSON decode error
+        return []  # Return an empty list
 
 
 # Save scores to JSON file
 def save_scores(data):
-    with open("scores.json", "w") as file: #open the scores.json file in write mode
-        json.dump(data, file, indent=4) #write the data to the file with indentation
-        
+    with open("anagram_scores.json", "w") as file:  # Open the anagram_scores.json file in write mode
+        json.dump(data, file, indent=4)  # Write the data to the file with indentation
+
 
 # Show leaderboard
-def show_anagram_leaderboard(): 
-    if os.path.exists("scores.json"):  #check if the scores.json file exists
-        with open("scores.json", "r") as file:  #open the scores.json file in read mode
-            data = json.load(file)      #load the data from the file
-        if data: #if there is data in the file
-            print("\n🏆 Anagram Leaderboard 🏆")    
+def show_anagram_leaderboard():
+    if os.path.exists("anagram_scores.json"):  # Check if the anagram_scores.json file exists
+        with open("anagram_scores.json", "r") as file:  # Open the anagram_scores.json file in read mode
+            data = json.load(file)  # Load the data from the file
+        if data:  # If there is data in the file
+            print("\n🏆 Anagram Leaderboard 🏆")
+            # Filter out invalid entries
+            valid_data = [entry for entry in data if isinstance(entry, dict) and 'score' in entry]
             # Sort the data by score in descending order and get the top 5 scores
-            top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5] 
-            for i, entry in enumerate(top_scores):  #iterate over the top scores
+            top_scores = sorted(valid_data, key=lambda x: x["score"], reverse=True)[:5]
+            for i, entry in enumerate(top_scores):  # Iterate over the top scores
                 print(f"{i + 1}. {entry['username']}: {entry['score']}")
         else:
             print("No scores yet. Be the first to set a high score!")
@@ -854,4 +857,4 @@ def math_bomb(username):
 
 #Run program
 if __name__ == "__main__":
-    main()   
+    main()
