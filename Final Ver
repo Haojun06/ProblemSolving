@@ -113,7 +113,7 @@ def register(users):
     if username in users:
         print("This user already exists. Try logging in OR create a new account.")
         input("Press ENTER to return to the main page...")
-        return users, username
+        return users
 
     password = input("Create a password:")
     
