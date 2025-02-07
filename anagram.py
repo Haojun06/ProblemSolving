@@ -1,15 +1,441 @@
-import random
-import time
 import os
 import json
-import requests
+import sys
+import time
+import threading
+import random
+import pip._vendor.requests
 
+#File to store user data
+users={}
+DATA_FILE = "users_data.json"
 
-# Clear the terminal screen
+def get_username():
+    global username
+    username = input("Enter your username: ").strip()
+
+#Load user data
+def load_data():
+    try:
+        with open(DATA_FILE, 'r') as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+     
+#Save user data 
+def save_data(data):
+    with open(DATA_FILE, 'w') as file:
+        json.dump(data, file, indent=4)
+        
+#Clear terminal screen
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
+    
+#Animated dots
+def a_dots():
+    for _ in range (3):
+        sys.stdout.write(".")
+        sys.stdout.flush()
+        time.sleep(0.5)
+    print()   
+
+#Main
+def main():
+    users = load_data()
+    logged_in = None
+
+    while True:
+        clear_screen()
+        print("Welcome to the game!🎮 🕹️  👾")
+        print("1️⃣  Register")
+        print("2️⃣  Log in")
+        print("3️⃣  Exit")
+
+        choice = input("Enter your choice (1-3): ").strip()
+
+        if choice == "1":
+            users = register(users)
+        elif choice == "2":
+            while logged_in is None:
+                logged_in = login(users)
+            while logged_in is not None:
+                main_menu(logged_in)
+        elif choice == "3":
+            print("Quitting game...")
+            time.sleep(2)
+            sys.exit()
+        else:
+            print("Invalid choice! Please try again.")
+            input("Press ENTER to continue...")
+        
+#Main Menu/Directory
+def main_menu(username):
+    while True:
+        clear_screen()
+def main_menu(username):
+    clear_screen()
+
+    print(f"Welcome, {username}! 🎮")
+
+    print("1️⃣  Play Games")
+    print("2️⃣  View Leaderboard")
+    print("3️⃣  Log Out")
+
+    choice = input("Enter your choice (1-3): ").strip()
+    if choice == "1":
+        game()
+    elif choice == "2":
+        leaderboard(username)
+    elif choice == "3":
+        logout(username)
+        main()
+        return username
+    else:
+        print("Invalid choice! Try again.")
+        input("Press ENTER to continue...")
+                
+#Register new user
+def register(users):
+    clear_screen()
+    print("REGISTER")
+
+    username = input("Create a username: ").strip()
+    
+    if username in users:
+        print("This user already exists. Try logging in OR create a new account.")
+        input("Press ENTER to return to the main page...")
+        return users, username
+
+    password = input("Create a password:")
+    
+    users[username] = password
+    save_data(users)
+
+    print("Account created! Please log in.")
+    input("Press ENTER to continue...")
+    return users
+
+#Login
+def login(users):
+    clear_screen()
+    print("LOG IN")
+
+    get_username()
+    
+    if username not in users:
+        print("This username does not exist! Please register.")
+        input("Press ENTER to go back...")
+        return None
+
+    password = input("Enter your password: ")
+    
+    if users[username] == password:
+        clear_screen()
+        a_dots()
+        print(f"Welcome, {username}!")
+        time.sleep(1)
+        return username
+    else:
+        print("Incorrect password!")
+        input("Press ENTER to return...")
+        main()
+        return None
+
+#Logout
+def logout(username):
+    clear_screen()
+    print(f"Logging out {username}")
+    a_dots()
+    time.sleep(2)
+    username = None  # Clear the username on logout
+    clear_screen()
+    print("Successfully logged out!")
+    input("Press ENTER to go to main page...")
+    return username  
+
+#Leaderboard
+def leaderboard(username):
+    clear_screen()
+    print("🏆VIEW LEADERBOARD🏆")
+    print("1️⃣  Math quiz")
+    print("2️⃣  Anagram")
+    print("3️⃣  Number bomb")
+    print("4️⃣  BACK")
+    
+    score_choice = input("Enter your choice (1-4): ").strip()
+    
+    if score_choice == "1": #View leaderboard for Math Quiz
+        clear_screen()
+        mathleaderboard()
+        input("Press ENTER to return...")
+        leaderboard(username)
+            
+    elif score_choice == "2": #View leaderboard for Anagram
+        clear_screen()
+        show_anagram_leaderboard()
+        input("Press ENTER to return...")
+        leaderboard(username)
+        
+    elif score_choice in "3": #View leaderboard for Number bomb 
+        clear_screen()
+        show_bombleaderboard()
+        input("Press ENTER to return...")
+        leaderboard(username)
+        
+    elif score_choice == "4": #Go back to main menu 
+        main_menu(username)        
+    
+    else: 
+        print("Invalid choice! Try again.")
+        input("Press ENTER to continue...")
+
+#Choose game
+def game():
+    while True:
+        clear_screen()
+        print(r"""
+██████╗  █████╗ ███╗   ███╗███████╗
+██╔════╝ ██╔══██╗████╗ ████║██╔════╝
+██║  ███╗███████║██╔████╔██║█████╗  
+██║   ██║██╔══██║██║╚██╔╝██║██╔══╝  
+╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗
+ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
+""")
+        a_dots()
+        time.sleep(2)
+        clear_screen()
+        print("Pick a game!🕹️")
+        print("1️⃣  Math Quiz")
+        print("2️⃣  Anagram")
+        print("3️⃣  Number Bomb")
+        print("4️⃣  BACK")
+
+        game_choice = input("Enter your choice (1-4): ").strip()
+
+        if game_choice == "4":
+            return
+        elif game_choice in "3":
+            clear_screen()
+            math_bomb(username)
+            input("Game ended! \n Press ENTER to return...")
+        elif game_choice == "1":
+            clear_screen()
+            math_quiz(username)
+            input("Game ended! \n Press ENTER to return...")
+        elif game_choice == "2":
+            clear_screen()
+            anagram_main_menu()
+            input("Game ended! \n Press ENTER to return...")
+        else:
+            print("Invalid choice! Try again.")
+            input("Press ENTER to continue...")
+
+# *************************************************************************
+#MATH QUIZ
+user_answer = None
+
+def get_input():
+    #modify the user_answer into global
+    global user_answer
+    user_answer = input()
+
+def gen_qtn(level):
+    #every level have diffrent question
+    if level == 'Easy':
+        #randomly pick from 1 to 10 for num1 and num2
+        #random.randint needed within a spesific range
+        num1 = random.randint(1, 10)
+        num2 = random.randint(1, 10)
+        #randomly pick from the list
+        #random.choice return a randomly selected element from a sequence
+        opt = random.choice(['+', '-', '*'])
+
+    elif level == 'Hard':
+        num1 = random.randint(1, 15)
+        num2 = random.randint(1, 15)
+        opt = random.choice(['+', '-', '*','/'])
+
+    elif level == 'Extreme':
+        num1 = random.randint(1, 30)
+        num2 = random.randint(1, 30)
+        opt = random.choice(['+', '-', '*','/','**','%'])
+
+    #check wheter the denominator is 0
+    if opt=="/" and num2==0:
+        #if yes pick the num2 again
+        num2=random.randint(1,10)
+
+    #using the num1 num2 opt provided generate a question
+    question = (f"{num1}{opt}{num2}")
+    #calculate the answer of the question
+    answer = eval(question)
+    return question, answer
+
+def time_per_question(answer, time_limit):
+    global user_answer
+    user_answer = None
+
+    #create a thread to run the get input function
+    input_thread = threading.Thread(target=get_input)
+    #start the thread
+    input_thread.start()
+
+    #function will continue after the time limit end without bothering the input thread completed or not
+    input_thread.join(timeout=time_limit)
+
+    #if user didnt input anything within the time limit the function will print time out and the correct answer
+    if user_answer == None:
+        print("\nTime Out")
+        print(f"The correct answer is {answer}")
+        #return false to the main function
+        return False
+
+    if user_answer.lower() == "quit":
+        print("You quit the quiz")
+        #return quit to the main funtion
+        return 'quit'
+    #try wheter the user_answer is valid input(numeric)
+    try:
+        if float(user_answer) == answer:
+            print("You're correct")
+            #return true to the main function
+            return True
+        else:
+            print(f"The correct answer is {answer}")
+            #return false to the main function
+            return False
+        
+    except ValueError:
+        print("Invalid Input")
+        #print invalid input and skip to the next question
+        
+def mathleaderboard():
+    #Function to show leaderboard before start
+    if os.path.exists("mathscore.json"):# If the score file exists
+        with open("mathscore.json", "r") as file:
+            data = json.load(file)  # Load existing scores
+
+        if data: # If there are scores
+            print("\n🏆 Math Quiz Leaderboard 🏆")
+            top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5]  # Show top 5
+            for i, entry in enumerate(top_scores):
+                print(f"{i + 1}. {entry['username']}: {entry['score']}")
+        else:
+            print("No scores yet. Be the first to set a high score!")
+    else:
+        print("No scores yet. Be the first to set a high score!")
 
 
+def math_quiz(username):
+    os.system('cls')
+    time_limit = [10, 8, 6]
+    num_questions = 5
+    question_correct=0
+    score = 0
+    levels = ["Easy", "Hard", "Extreme"]
+    cont_game = 'yes'
+    mark=[1,2,3]
+
+    #Instruction for math quiz
+    print("Welcome to Math Quiz")
+    #wait for 1 second for readability
+    time.sleep(1)
+    print("Nice to meet you")
+    time.sleep(1)
+    print("You will score different mark for every level")
+    print("You will score 1 mark for each question in Easy level which is level 1")
+    print("You will score 2 mark for each question in Hard level which is level 2")
+    print("You will score 3 mark for each question in Extreme level which is level 3")
+    print("(Enter 'quit' to exit the quiz at any time)")
+    #user can continue the game whenever the user want
+    input("Please press an enter after you read all the rules")
+    #clear the rules screen
+    os.system('cls')
+
+    level_index = 0  # Start from the first level
+    #while loop will continue until the level index is more than the len of levels which is 3
+    while level_index < len(levels):
+        #select the level from the levels list
+        level = levels[level_index]
+        print(f"Starting Level {level_index + 1}: {level}")
+        i = 1  # Initialize the counter for questions
+
+        while i <= num_questions:
+            #print the number of question
+            print(f"Question {i}/{num_questions}:")
+            #call the gen_qtn function and give the level to the function
+            #function generate the question based on the level
+            #gen_qtn function return a tuple with two elements
+            #question,answer= gen_qtn(level) is unpacking the tuple into two elements
+            question, answer = gen_qtn(level)
+            #print the time limit for each question and the question
+            print(f"Time limit: {time_limit[level_index]}seconds\nWhat is your answer for {question}")
+            #call the tim_per_question function with the info answer and the time limit
+            #unpack the result to a element
+            result = time_per_question(answer, time_limit[level_index])
+            #if user input is quit
+            if result == 'quit':
+                #it shows that the user dont want to continue the game
+                cont_game = "no"
+            #quit from the loop
+                break
+
+            #if user answer is correct
+            if result==True:
+                #the question will add 1
+                question_correct=question_correct+1
+                #the score will be scored based on the level the user are playing
+                score =score+ mark[level_index]
+
+            i += 1  # Increment the question counter
+            time.sleep(1)#give user some time to read the instruction
+            os.system('cls')#clear the screen
+
+        #if the user dont want to continue the game
+        if cont_game == 'no':
+            #user quit from the loop
+            break
+        
+        #print the question user have successfully answered and the score the user scored
+        print(f"You successfully answered {question_correct} questions correctly and your score is {score}")
+        
+        #if the game havent finish
+        if level_index<2:
+            #in the end of every level the user will be asked wheter the user want to continue or not
+            cont_game = input("Do you want to continue the game? (yes/no): ").lower()
+            #if the user dont want to continue 
+            if cont_game == "no":
+            #quit from the loop
+                break
+        #if the user have arrive the end of the extreme level
+        else:
+            #automatically quit the loop
+            break
+        
+        level_index += 1  # Move to the next level
+
+    print("Thanks for playing")
+    print(f"You answered {question_correct} question correct out of {i} question and score {score} ")
+
+    if os.path.exists("mathscore.json"):
+        try:
+            with open("mathscore.json", "r") as file: #open the file in read mode
+                data = json.load(file)# Load existing scores
+        except json.JSONDecodeError: # Handle the case where the JSON file is corrupted
+            print("⚠️ Warning: Score file is corrupt. Resetting scores.")
+            data = []  # Reset to an empty list if the file is corrupted
+    else:
+        data = []  # If no file, start fresh
+
+    data.append({"username": username, "score": score})  # Store score as a dictionary
+
+    with open("mathscore.json", "w") as file:
+        json.dump(data, file, indent=4)  # Save updated scores
+
+    mathleaderboard()
+    
+# *************************************************************************
+#ANAGRAM
 # Load words by using API
 def load_words():
     try:
@@ -20,7 +446,7 @@ def load_words():
         }
 
 
-        response = requests.get(url,headers=headers)  #make a get request to the API
+        response = pip._vendor.requests.get(url,headers=headers)  #make a get request to the API
         if response.status_code == 200:
             data = response.json()  # API returns a list of words
             
@@ -31,7 +457,7 @@ def load_words():
         else:  #if the status code is not 200
             print("Error fetching words from API. Using fallback words.")
             return ["default", "example", "random", "python", "coding"]
-    except requests.RequestException:  #if there is an error with the request(e.g. network error)
+    except pip._vendor.requests.RequestException:  #if there is an error with the request(e.g. network error)
         print("Network error. Using fallback words.")
         return ["default", "example", "random", "python", "coding"]
 
@@ -45,34 +471,36 @@ def shuffle_word(word):
 
 
 # Load scores from JSON file
-def load_scores():
+def load_anagram_scores():
     try:
-        with open("scores.json", "r") as file:  #open the scores.json file in read mode
-            data = json.load(file)  #load the data from the file
-            if isinstance(data, list):      #check if the data is a list
-                return data #return the data
-            else:   #if the data is not a list
-                return []   #return an empty list
-    except (FileNotFoundError, json.JSONDecodeError): #if the file is not found or there is a JSON decode error
-        return []  #return an empty list
+        with open("anagram_scores.json", "r") as file:  # Open the anagram_scores.json file in read mode
+            data = json.load(file)  # Load the data from the file
+            if isinstance(data, list):  # Check if the data is a list
+                return data  # Return the data
+            else:  # If the data is not a list
+                return []  # Return an empty list
+    except (FileNotFoundError, json.JSONDecodeError):  # If the file is not found or there is a JSON decode error
+        return []  # Return an empty list
 
 
 # Save scores to JSON file
 def save_scores(data):
-    with open("scores.json", "w") as file: #open the scores.json file in write mode
-        json.dump(data, file, indent=4) #write the data to the file with indentation
+    with open("anagram_scores.json", "w") as file:  # Open the anagram_scores.json file in write mode
+        json.dump(data, file, indent=4)  # Write the data to the file with indentation
 
 
 # Show leaderboard
-def show_anagramleaderboard(): 
-    if os.path.exists("scores.json"):  #check if the scores.json file exists
-        with open("scores.json", "r") as file:  #open the scores.json file in read mode
-            data = json.load(file)      #load the data from the file
-        if data: #if there is data in the file
-            print("\n🏆 Anagram Leaderboard 🏆")    
+def show_anagram_leaderboard():
+    if os.path.exists("anagram_scores.json"):  # Check if the anagram_scores.json file exists
+        with open("anagram_scores.json", "r") as file:  # Open the anagram_scores.json file in read mode
+            data = json.load(file)  # Load the data from the file
+        if data:  # If there is data in the file
+            print("\n🏆 Anagram Leaderboard 🏆")
+            # Filter out invalid entries
+            valid_data = [entry for entry in data if isinstance(entry, dict) and 'score' in entry]
             # Sort the data by score in descending order and get the top 5 scores
-            top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5]  
-            for i, entry in enumerate(top_scores):  #iterate over the top scores
+            top_scores = sorted(valid_data, key=lambda x: x["score"], reverse=True)[:5]
+            for i, entry in enumerate(top_scores):  # Iterate over the top scores
                 print(f"{i + 1}. {entry['username']}: {entry['score']}")
         else:
             print("No scores yet. Be the first to set a high score!")
@@ -81,7 +509,7 @@ def show_anagramleaderboard():
 
 
 # Main menu
-def main_menu():
+def anagram_main_menu():
     while True:
         clear_screen()
         # Display the main menu options
@@ -95,14 +523,17 @@ def main_menu():
         choice = input("Choose an option: ").strip()
         # Check the user's choice and call the corresponding function
         if choice == "1":
+            clear_screen()
             play_timed_mode()
         elif choice == "2":
+            clear_screen()
             play_relaxed_mode()
         elif choice == "3":
-            view_scores()
+            view_anagram_scores()
             input("\nPress Enter to return to the main menu.")
         elif choice == "4":
-            show_anagramleaderboard()
+            clear_screen()
+            show_anagram_leaderboard()
             input("\nPress Enter to return to the main menu.")
         elif choice == "5":
             print("Goodbye!")
@@ -111,10 +542,9 @@ def main_menu():
             print("Invalid choice. Please try again.")
             time.sleep(2)
 
-
 # View high scores
-def view_scores():
-    scores = load_scores()
+def view_anagram_scores():
+    scores = load_anagram_scores()
     clear_screen()
     print("High Scores:\n")
     if scores:
@@ -123,11 +553,10 @@ def view_scores():
             print(f"Username: {entry['username']}, Score: {entry['score']}, Hints Used: {entry['hints_used']}, Rounds Played: {entry['rounds_played']}")
     else:
         print("No scores available.")
-    input("Press Enter to return to the main menu.")
 
 
 def play_timed_mode():
-    scores = load_scores()  # Load scores from file
+    scores = load_anagram_scores()  # Load scores from file
     print("Starting Timed Mode...\n")
     print("Rules: Unscramble the letters to form a valid word.")
     print("Type 'hint' for a hint, 'skip' to skip a word, or 'quit' to exit.\n")
@@ -200,7 +629,7 @@ def play_timed_mode():
 # Relaxed mode
 def play_relaxed_mode():
     # Load scores from file
-    scores = load_scores()
+    scores = load_anagram_scores()
     print("Starting Timed Mode...\n")
     print("Rules: Unscramble the letters to form a valid word.")
     print("Type 'hint' for a hint, 'skip' to skip a word, or 'quit' to exit.\n")
@@ -247,8 +676,175 @@ def play_relaxed_mode():
     username = input("Enter your username: ").strip()
     scores.append({"username": username, "score": score, "hints_used": hints_used, "rounds_played": rounds_played})
     save_scores(scores)
-    save_scores(scores)
 
+# *************************************************************************    
+#NUMBER BOMB
+# Function to set up a random correct answer and fake hint turn
+def setting (level):
+    global correct , fake_hint_turn #let the value declares to whole program
+    fake_hint_turn = random.randint(1, 6) # randomly set a fake hint turn
+    correct = random.randint(1,level) #random correct number 
+    print(f"The correct number is between 1 and {level}")
+    
+#Function to decrease the lives and give the fake hint or real hint
+def hint(guess):
+    global lives #let the value declares to whole program
+    lives -=  1 #decreasing the number of lives after each guess
+    if lives == fake_hint_turn - 1:#if the random number(fake_hint_turn) is equal to the lives , fake hint is triggered
+        if correct > guess:
+            print (f"smaller than {guess}...lives remain :{lives}")
+        else :
+            print (f"greater than {guess}...lives remain :{lives}")
+    else:# If it's a real hint
+        if correct > guess:
+            print (f"greater than {guess}...lives remain :{lives}")
+        else: print (f"smaller  than {guess}...lives remain :{lives}")
+    return lives # Returning the remaining lives after each guess
+    
+#Function to show result of guess
+def result(score,guess,streak):
+    if correct == guess: # If the guess is correct
+        print("CORRECT ANSWER !! GO TO NEXT LEVEL")
+        score += 100 # adding score
+        streak += 1 # adding streak
+        if streak == 4 : 
+            score *= 2 # if streak is enough ,double the score
+            print("BONUS:scores is doubled") 
+            print(f"current score = {score}")
+            streak = 0 # reset the streak 
+        status = "next" 
+        clear_screen()# Clears the screen before each question
+    else:
+        print(f"GAME OVER . The correct number was {correct}.")
+        status = "stop"
+        time.sleep(2) # Pause so user can see "GAME OVER"
+    return score , status ,streak
 
+#Function to show level difficulty
+def levels(level):
+    if level <= 10 :
+        print("level : EASY ")
+    elif level <= 20 and level >10:
+        print("level : HARD ")
+    elif level <= 30 and level >20:
+        print("level : DIFFICULT ")
+    else:
+        print("level : INSANE ")
+
+def save_score(score):
+    if os.path.exists("bombscore.json"):
+        try:
+            with open("bombscore.json", "r") as file: #open the file in read mode
+                data = json.load(file)# Load existing scores
+        except json.JSONDecodeError: # Handle the case where the JSON file is corrupted
+            print("⚠️ Warning: Score file is corrupt. Resetting scores.")
+            data = []  # Reset to an empty list if the file is corrupted
+    else:
+        data = []  # If no file, start fresh
+
+    data.append({"username": username, "score": score})  # Store score as a dictionary
+
+    with open("bombscore.json", "w") as file:
+        json.dump(data, file, indent=4)  # Save updated scores
+  
+#Function to show leaderboard before start
+def show_bombleaderboard():
+    if os.path.exists("bombscore.json"):# If the score file exists
+        with open("bombscore.json", "r") as file:
+            data = json.load(file)  # Load existing scores
+
+        if data: # If there are scores
+            print("\n🏆 Number Bomb Leaderboard 🏆")
+            top_scores = sorted(data, key=lambda x: x["score"], reverse=True)[:5]  # Show top 5
+            for i, entry in enumerate(top_scores):
+                print(f"{i + 1}. {entry['username']}: {entry['score']}")
+        else:
+            print("No scores yet. Be the first to set a high score!")
+    else:
+        print("No scores yet. Be the first to set a high score!")
+        
+    return username
+    
+# Function to ask the player if they want to continue
+def ask_continue():
+    while True:
+        choice = input("Do you want to continue playing? (yes/no): ").strip().lower()  # ensure no spacing and case-insensitivity
+        if choice == "no":
+            return "stop"  # Return "stop" to end the game
+        elif choice == "yes":
+            return "next"  # Return "next" to continue the game
+        else:
+            print("Invalid choice. Please enter 'yes' or 'no'.")
+
+def math_bomb(username):
+    global lives
+
+    #starting part
+    print("Welcome to NUMBER BOMB section ^-^")
+    time.sleep(1) # delay for better user experience
+    print("You will be given 6 lives for guessing the correct answer")
+    time.sleep(1)
+    print("Hint will be given after a wrong answer , but there will be one fake hint.")
+    time.sleep(1)
+    print("🔥 Hit a streak of 3 correct answers and earn a 2x bonus !")
+    time.sleep(1)
+
+    #setting a initial value 
+    level = 0 # Starting level of the game
+    score = 0 # Player's score
+    status = "next" # Game status (next means the game continues)
+    lives = 6 #PLayer's lives
+    streak = 0 #streak in correct answer
+
+    # Call this before the game starts to show the leaderboard
+    show_bombleaderboard() 
+    time.sleep(1)
+
+    #Game loop
+    while status == "next":
+        lives = 6 # Reset lives to 6 for each new round
+        level += 10 # Increase level after each round
+        setting(level) # Set the correct answer and fake hint turn for the round
+        levels(level) # Display the current difficulty level
+        print(f"Your current score: {score}")
+        print(f"Your current streak: {streak}")
+
+        guess = None
+        while guess is None:
+            try:
+                guess = int(input("Your Guess: "))
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+                
+        # Keep giving hints until the player guesses correctly or runs out of lives       
+        while guess != correct and lives > 0 :
+            lives = hint(guess) # Call the hint function and decrease lives
+            guess = None 
+            while guess is None :
+                try:
+                    guess = int(input("Your Guess: "))
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
+     
+        score ,status,streak = result(score,guess,streak)
+
+        # Every 4 levels, ask the player if they want to continue
+        if level % 40 == 0 and status == "next":
+            print("\n🎮 You've completed 4 levels! 🎮")
+            status = ask_continue()  # Use the function to ask if the player wants to continue
+
+        
+    # Save score at the end of the game
+    print(f"Your final score is: {score}")
+    save_score(score)
+        
+    # Show updated leaderboard after the game
+    show_bombleaderboard()
+
+    # Pause for 5 seconds so user can see the final score
+    time.sleep(5) 
+    return username
+
+#Run program
 if __name__ == "__main__":
-    main_menu()
+    main()
