@@ -13,7 +13,7 @@ import sys
 import time
 import threading
 import random
-import pip._vendor.requests
+import requests
 
 #File to store user data
 users={}
@@ -221,13 +221,7 @@ def game():
 
         game_choice = input("Enter your choice (1-4): ").strip()
 
-        if game_choice == "4":
-            return
-        elif game_choice in "3":
-            clear_screen()
-            math_bomb(username)
-            input("Game ended! \n Press ENTER to return...")
-        elif game_choice == "1":
+        if game_choice == "1":
             clear_screen()
             math_quiz(username)
             input("Game ended! \n Press ENTER to return...")
@@ -235,6 +229,12 @@ def game():
             clear_screen()
             anagram_main_menu()
             input("Game ended! \n Press ENTER to return...")
+        elif game_choice == "3":
+            clear_screen()
+            math_bomb(username)
+            input("Game ended! \n Press ENTER to return...")
+        elif game_choice == "4":
+            return
         else:
             print("Invalid choice! Try again.")
             input("Press ENTER to continue...")
@@ -456,7 +456,7 @@ def load_words():
         }
 
 
-        response = pip._vendor.requests.get(url,headers=headers)  #make a get request to the API
+        response = requests.get(url,headers=headers)  #make a get request to the API
         if response.status_code == 200:
             data = response.json()  # API returns a list of words
             
@@ -467,7 +467,7 @@ def load_words():
         else:  #if the status code is not 200
             print("Error fetching words from API. Using fallback words.")
             return ["default", "example", "random", "python", "coding"]
-    except pip._vendor.requests.RequestException:  #if there is an error with the request(e.g. network error)
+    except RequestException:  #if there is an error with the request(e.g. network error)
         print("Network error. Using fallback words.")
         return ["default", "example", "random", "python", "coding"]
 
@@ -798,6 +798,8 @@ def math_bomb(username):
     time.sleep(1)
     print("🔥 Hit a streak of 3 correct answers and earn a 2x bonus !")
     time.sleep(1)
+    print( "Want to stop? Just type 'quit' to exit!🏁🎮")
+    time.sleep(1)
 
     #setting a initial value 
     level = 0 # Starting level of the game
@@ -819,23 +821,35 @@ def math_bomb(username):
         print(f"Your current score: {score}")
         print(f"Your current streak: {streak}")
 
-        guess = None
-        while guess is None:
+        guess = None # set guess as None to ensure the loop runs at least once and get user input
+        while guess is None: # Keep asking until valid input is provided
             try:
-                guess = int(input("Your Guess: "))
-            except ValueError:
+                user_input = input("Your Guess: ")  # Get input as a string
+                if user_input.lower() == "quit":  # Check is it "quit" before conversion
+                    print("Game Over. You choose to quit.")
+                    save_score(score)  # Save score before exiting
+                    show_bombleaderboard()  # Show leaderboard before quitting
+                    return  #exits the `number_bomb` function
+                guess = int(user_input)  # Convert only if it's not "quit"
+            except ValueError: # handle invalid input
                 print("Invalid input. Please enter a number.")
                 
         # Keep giving hints until the player guesses correctly or runs out of lives       
         while guess != correct and lives > 0 :
-            lives = hint(guess) # Call the hint function and decrease lives
-            guess = None 
-            while guess is None :
+            lives = hint(guess) # Call the hint function for hint and decrease lives
+            guess = None # Reset guess to ensure new input is taken
+            while guess is None:
                 try:
-                    guess = int(input("Your Guess: "))
+                    user_input = input("Your Guess: ")  # Get input as a string
+                    if user_input.lower() == "quit":  # Check before conversion
+                        print("Game Over. You choose to quit.")
+                        save_score(score)  # Save score before exiting
+                        show_bombleaderboard()  # Show leaderboard before quitting
+                        return  # exit the `number_bomb` function
+                    guess = int(user_input)  # Convert only if it's not "quit"
                 except ValueError:
                     print("Invalid input. Please enter a number.")
-     
+        
         score ,status,streak = result(score,guess,streak)
 
         # Every 4 levels, ask the player if they want to continue
