@@ -134,6 +134,7 @@ def login(users):
     if username not in users:
         print("This username does not exist! Please register.")
         input("Press ENTER to go back...")
+        main()
         return None
 
     password = input("Enter your password: ")
